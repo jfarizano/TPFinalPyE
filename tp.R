@@ -3,14 +3,13 @@ library(markovchain)
 
 # ----------------------------------------------------------------------------
 # Ej 1
-# Para el 1c: 3/p
 
 simularCienTiradas <- function(P) {
   Sim <- sample(c("Cara", "Cruz"), 100, T, c(P, 1 - P))
   length(which(Sim == "Cara"))
 }
 
-simularALot <- function(N, P) {
+simularCienPorN <- function(N, P) {
   Acumulador = 0
   Uno = 0
   for (i in 1:N) {
@@ -23,24 +22,19 @@ simularALot <- function(N, P) {
   c(Uno / N, Acumulador / N)
 }
 
-tresCaras <- function(P) {
-  N = 0
-  Tiradas = 0
-  while(N < 3) {
-    Sim <- sample(c("Cara", "Cruz"), 1, T, c(P, 1 - P))
-    if (Sim[1] == "Cara") {
-      N = N + 1
-    }
-    Tiradas = Tiradas + 1
-  }
-  Tiradas
-}
-
-buscarTres <- function(N, P) {
-  Acumulador = 0
+tresCaras <- function(N, P) {
+  Acumulador <- 0
   for (i in 1:N) {
-    Sim <- tresCaras(P)
-    Acumulador <- Acumulador + Sim
+    Veces <- 0
+    Tiradas <- 0
+    while(Veces < 3) {
+      Sim <- sample(c("Cara", "Cruz"), 1, T, c(P, 1 - P))
+      if (Sim[1] == "Cara") {
+        Veces <- Veces + 1
+      }
+      Tiradas <- Tiradas + 1
+    }
+    Acumulador <- Acumulador + Tiradas
   }
   Acumulador / N
 }
@@ -51,14 +45,27 @@ buscarTres <- function(N, P) {
 
 # Ej 2
 
-ej2 <- function(N, P) {
+trayectoriaD <- function(N, P) {
   Sim <- sample(c(1, 0), N, T, c(P, 1 - P))
-  Trayecto = c(0)
-  Trayecto[1] = 2 * Sim[1] -1
-  for (i in 2:N) {
-    Trayecto[i] <- Trayecto[i - 1] + 2 * Sim[i] - 1
+  D <- vector()
+  for (i in 1:N) {
+    D[i] <- 2 * Sim[i] - 1
   }
-  Trayecto
+  D
+}
+
+trayectoriaS <- function(N, P) {
+  D <- trayectoriaD(N, P)
+  S <- c(0)
+  S[1] = 2 * D[1] -1
+  for (i in 2:N) {
+    S[i] <- S[i - 1] + D[i]
+  }
+  plot(S, type = "p", xlab = "Instante", ylab = "Valor de S",  main = "Trayectoria de Sn",
+       xlim = c(1, N), ylim = c(min(S), max(S)), xaxt = "n", yaxt = "n")
+  axis(side = 1, seq(1, N, 1))
+  axis(side = 2, at = seq(min(S), max(S), 1))
+  S
 }
 
 # ----------------------------------------------------------------------------
@@ -67,7 +74,7 @@ ej2 <- function(N, P) {
 
 # Ej 3
 
-gamblersRuinChain <- function(P, K, S, N, Simulaciones) {
+calcularProbRuinaCadena <- function(P, K, S, N, Simulaciones) {
   States <- as.character(0:S)
   Transition <- matrix(0, nrow = S + 1, ncol = S + 1)
   for (i in 2:S) {
@@ -86,50 +93,43 @@ gamblersRuinChain <- function(P, K, S, N, Simulaciones) {
   for (i in 1:Simulaciones) {
    Resultado = rmarkovchain(mc, n = N, t0 = K)[N]
    if (Resultado == 0) {
-     Arruinado = Arruinado + 1
-   }
-   if (Resultado == S) {
-     Millonario = Millonario + 1
+     Arruinado <- Arruinado + 1
    }
   }
   c(Arruinado, Millonario) / Simulaciones
 }
 
-gamblersRuinIter <- function(P, K, S, Simulaciones) {
-  Arruinado = 0
-  Millonario = 0
+calcularProbRuinaIter <- function(P, K, S, Simulaciones) {
+  Arruinado <- 0
+  Millonario <- 0
   for (i in 1:Simulaciones) {
-    Resultado = K
-    Pasos = 0
+    Resultado <- K
+    Pasos <- 0
   
     while (Resultado != 0 & Resultado != S) {
-      Resultado = Resultado + sample(c(1, -1), 1, T, c(P, 1 - P))[1]
-      Pasos = Pasos + 1
+      Resultado <- Resultado + sample(c(1, -1), 1, T, c(P, 1 - P))[1]
+      Pasos <- Pasos + 1
     }
-    
     if (Resultado == 0) {
-      Arruinado = Arruinado + 1
-    }
-    if (Resultado == S) {
-      Millonario = Millonario + 1
+      Arruinado <- Arruinado + 1
     }
   }
-  c(Arruinado, Millonario) / Simulaciones
+  Arruinado / Simulaciones
 }
 
 gamblersRuinTrayectoria <- function(P, K, S) {
-  Pasos = 0
-  Resultado = K
-  Trayectoria = c(K)
+  Pasos <- 0
+  Resultado <- K
+  Trayectoria <- c(K)
   
   while (Resultado != 0 & Resultado != S) {
-    Resultado = Resultado + sample(c(1, -1), 1, T, c(P, 1 - P))[1]
-    Trayectoria = c(Trayectoria, Resultado)
-    Pasos = Pasos + 1
+    Resultado <- Resultado + sample(c(1, -1), 1, T, c(P, 1 - P))[1]
+    Trayectoria <- c(Trayectoria, Resultado)
+    Pasos <- Pasos + 1
   }
   
-  plot(0:Pasos, Trayectoria, type = "o", xlab = "Instante", ylab ="Cantidad de dinero", main = "Trayectoria del jugador",
-       ylim = c(0, S))
+  plot(0:Pasos, Trayectoria, type = "p", xlab = "Instante", ylab ="Cantidad de dinero",
+       main = "Trayectoria del jugador", ylim = c(0, S))
 }
 
 # ----------------------------------------------------------------------------
