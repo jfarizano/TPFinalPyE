@@ -137,10 +137,7 @@ gamblersRuinTrayectoria <- function(P, K, S) {
 # ----------------------------------------------------------------------------
 
 # Ej 4
-
-# Hacer apartado b
-
-ej4 <- function(N) {
+ratonLaboratorio <- function(N) {
   Total = 0
   
   for (i in 1:N) {
@@ -184,6 +181,10 @@ ej5 <- function() {
   MC <<- new("markovchain", states = rownames(P), transitionMatrix = P, name="Epidemia")
 }
 
+# Para el b usar hittingProbabilities(MC)
+# Para el c usar meanAbsorptionTime(MC)
+# Para el d usar steadyStates(MC)
+
 # ----------------------------------------------------------------------------
 # ----------------------------------------------------------------------------
 # ----------------------------------------------------------------------------
@@ -191,7 +192,7 @@ ej5 <- function() {
 # Ej 6
 
 ej6 <- function() {
-  P <- matrix(c(0, 0, 0, 0, 1/2, 1/2, 0, 
+  P <<- matrix(c(0, 0, 0, 0, 1/2, 1/2, 0, 
                 1/3, 0, 1/3, 0, 0, 1/3, 0,
                 0, 0, 0, 1/2, 0, 1/2, 0,
                 0, 0, 0, 0, 0, 1, 0,
@@ -201,7 +202,7 @@ ej6 <- function() {
               dimnames = list(c("a", "b", "c", "d", "e", "f", "g"), c("a", "b", "c", "d", "e", "f", "g")))
   MC <<- new("markovchain", states = rownames(P), transitionMatrix = P, name="PageRank")
   pi <- c(1/7, 1/7, 1/7, 1/7, 1/7, 1/7, 1/7)
-  rmarkovchain(MC, n = 100, t0 = sample(rownames(P), 1, T, pi)[1])
+  Sim <<- rmarkovchain(MC, n = 100, t0 = sample(rownames(P), 1, T, pi)[1])
 }
 
 # ----------------------------------------------------------------------------
@@ -216,10 +217,10 @@ ej7 <- function(t) {
   S <- c(X[1])
   
   while (S[i] <= t) {
-   i <- i + 1
-   X[i] <- rexp(1, 10)
-   S[i] <- X[i] + S[i - 1]
-   
+    i <- i + 1
+    X[i] <- rexp(1, 10)
+    S[i] <- X[i] + S[i - 1]
+    
   }
   
   if (S[i] > t) {
@@ -228,7 +229,16 @@ ej7 <- function(t) {
     i <- i - 1
   }
   
-  rbind(X, S)
+  X <<- X
+  S <<- S
+  i <<- i
+  
+  plot(c(0,S), (0:i), type = "s", xlim = c(0, t))
+  hist(X, freq = F)
+}
+
+densidadSn <- function(n, t) {
+  ((10 ^ n) * t ^ (n - 1) * exp(-10 * t)) / factorial(n-1)
 }
 
 # ----------------------------------------------------------------------------
@@ -238,15 +248,15 @@ ej7 <- function(t) {
 # Ej 8
 
 ej8 <- function() {
-  init <- c(0, 0, 0, 0, 1)
-  P <- matrix(c(0, 0, 0, 0, 1,
+  init <<- c(0, 0, 0, 0, 1)
+  P <<- matrix(c(0, 0, 0, 0, 1,
                 0, 8/13, 3/13, 1/13, 1/13,
                 1/16, 3/16, 3/8, 1/4, 1/8,
                 0, 1/11, 4/11, 5/11, 1/11,
                 0, 1/8, 1/2, 1/8, 1/4),
               nrow = 5, byrow = T,
               dimnames = list(c(90, 135, 139, 445, "No attack"), c(90, 135, 139, 445, "No attack")))
-  mc <<- new("markovchain", states = rownames(P), transitionMatrix = P, name="Honeypot")
-  init * (mc^2) # a)
-  steadyStates(mc) # b)
+  MC <<- new("markovchain", states = rownames(P), transitionMatrix = P, name="Honeypot")
+  init * (MC^2) # a)
+  steadyStates(MC) # b)
 }

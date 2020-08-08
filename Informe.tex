@@ -448,4 +448,510 @@ Entonces, la probabilidad de ruina del jugador arracando con $ k = 3 $ es $ G(3,
 matriz $S$ y $G$ están redondeados a 4 cifras decimales). Observemos además que con la simulación
 se obtuvo una buena aproximación a la probabilidad deseada.
 
+% ============================================================================
+% ============================================================================
+% ============================================================================
+
+\section{Ejercicio 4}
+
+\subsection*{Apartado a)}
+
+Realizamos la simulación utilizando el siguiente código en R, siendo el 
+argumento N la cantidad de veces que se realizará la simulación:
+
+\begin{verbatim}
+  ratonLaboratorio <- function(N) {
+    Total = 0
+
+    for (i in 1:N) {
+      Tiempo = 0
+      Resultado = "Seguir"
+
+      while (Resultado == "Seguir") {
+        Direccion = sample(c("Izquierda", "Derecha"), 1, T, c(0.5, 0.5))[1]
+        if (Direccion == "Izquierda") {
+          Resultado = sample(c("Seguir", "Salir"), 1, T, c(2/3, 1/3))[1]
+          if (Resultado == "Seguir") {
+            Tiempo = Tiempo + 5
+          } else {
+            Tiempo = Tiempo + 2
+            Resultado = "Salir"
+          }
+        } else {
+          Tiempo = Tiempo + 3
+        }
+
+      }
+      Total = Total + Tiempo
+    }
+  
+    Total / N
+}
+\end{verbatim}
+
+Al realizar la simulación una vez, obtenemos el siguiente resultado:
+
+\begin{verbatim}
+  > ratonLaboratorio(1000000)
+  [1] 20.98719
+\end{verbatim}
+
+% ============================================================================
+
+\subsection*{Apartado b)}
+
+Definimos las variable aleatorias: \\
+\begin{center}
+  X: tiempo (en minutos) que tarda el ratón en salir del laberinto.
+\end{center}
+% Y: borrador -> opcion entre \{puerta izquierda y salir, puerta izquierda y volver, puerta derecha\}
+
+\[
+  Y = \begin{cases}
+        1 & \text{si el ratón elige la puerta izquierda y va a la salida} \\
+        2 & \text{si el ratón elige la puerta izquierda y vuelve al inicio} \\
+        3 & \text{si el ratón elige la puerta derecha}
+      \end{cases}
+\]
+
+Entonces, si queremos obtener el resultado del apartado a) en forma analítica simplemente recurrimos
+a la fórmula de esperanza condicional:
+
+\begin{align*}
+  E(X) &= E(X \vert Y = 1)P(Y = 1) + E(X \vert Y = 2)P(Y = 2) + E(X \vert Y = 3)P(Y = 3) \\
+       &= 2 \cdot \frac{1}{2} \cdot \frac{1}{3} + 
+          (5 + E(X)) \cdot \frac{1}{2} \cdot \frac{2}{3} +
+          (3 + E(X)) \cdot \frac{1}{2} \\
+      &= \frac{1}{3} + \frac{5}{3} + \frac{E(X)}{3} + \frac{3}{2} + \frac{E(X)}{2} \\
+      &= \frac{7}{2} + \frac{5}{6} \cdot E(X) \Rightarrow \frac{E(X)}{6} = \frac{7}{2} \Rightarrow E(X) = 21
+\end{align*}
+
+% ============================================================================
+% ============================================================================
+% ============================================================================
+
+\section{Ejercicio 5}
+
+\subsection*{Apartado a)}
+
+Sea P la matriz de transición de la cadena
+
+\begin{equation*}
+  P = 
+  \begin{blockarray}{ccccc}
+     & \text{S} & \text{VIH} & \text{SIDA} & \text{M} \\
+    \begin{block}{c(cccc)}
+      \text{S}    & 0.999 & 0.001 & 0     & 0 \\
+      \text{VIH}  & 0     & 0.994 & 0.006 & 0 \\
+      \text{SIDA} & 0     & 0     & 0.918 & 0.082 \\
+      \text{M}    & 0     & 0     & 0     & 1 \\
+    \end{block}
+  \end{blockarray}
+\end{equation*}
+
+Llamamos $E$ al conjunto de estados, luego $E =$ \{S, VIH, SIDA, M\}
+
+A partir del grafo hallamos el conjunto cerrado al cual pertenece cada uno de
+los estados.
+\begin{itemize}
+  \item $C_S$ = \{S, VIH, SIDA, M\} = $E$
+  \item $C_{VIH}$ = \{VIH, SIDA, M\}
+  \item $C_{SIDA}$ = \{SIDA, M\}
+  \item $C_M =$ \{M\}
+\end{itemize}
+
+$C_S$, $C_{\text{VIH}}$ y $C_{\text{SIDA}}$ son conjuntos cerrados no irreducibles finitos,
+$C_M$ es irreducible finito.
+La CM no es irreducible y por lo tanto no es periódica, aperiódica, recurrente, transitoria ni ergódica.
+Ningún estado es periódico.
+S, VIH y SIDA son estados transitorios, M es un estado absorbente.
+
+% ============================================================================
+
+\subsection*{Apartado b)}
+
+Viendo la matriz de transición podemos deducir lo siguiente:
+
+\begin{align*}
+&F(\text{VIH}, S) = F(\text{SIDA}, S) = F(\text{SIDA}, \text{VIH}) = F(M, S) = F(M, \text{VIH}) = F(M, \text{SIDA}) = 0 \\
+&F(M, M) = 1
+\end{align*}
+entonces la matriz $ F $ nos queda completada parcialmente de la siguiente manera:
+
+\begin{equation*}
+  F = 
+  \begin{blockarray}{ccccc}
+     & \text{S} & \text{VIH} & \text{SIDA} & \text{M} \\
+    \begin{block}{c(cccc)}
+      \text{S}    & - & - & - & - \\
+      \text{VIH}  & 0 & - & - & - \\
+      \text{SIDA} & 0 & 0 & - & - \\
+      \text{M}    & 0 & 0 & 0 & 1 \\
+    \end{block}
+  \end{blockarray}
+\end{equation*}
+
+Ahora, procedemos a hallar la matriz $ G = SB $:
+
+\begin{equation*}
+  Q = 
+  \begin{blockarray}{cccc}
+     & \text{S} & \text{VIH} & \text{SIDA} \\
+    \begin{block}{c(ccc)}
+      \text{S}    & 0.999 & 0.01  & 0 \\
+      \text{VIH}  & 0     & 0.994 & 0.06 \\
+      \text{SIDA} & 0     & 0     &  0.918   \\
+    \end{block}
+  \end{blockarray}
+\end{equation*}
+
+\begin{equation*}
+  B = 
+  \begin{blockarray}{cc}
+     & C_M \\
+    \begin{block}{c(c)}
+      \text{S}    & 0 \\
+      \text{VIH}  & 0 \\
+      \text{SIDA} & 0.082   \\
+    \end{block}
+  \end{blockarray}
+\end{equation*}
+
+$ S = (I - Q)^{-1} $ 
+
+\begin{equation*}
+  S = 
+  \begin{blockarray}{cccc}
+     & \text{S} & \text{VIH} & \text{SIDA} \\
+    \begin{block}{c(ccc)}
+      \text{S}    & 1000 & 166.\overline{6} & 12.1951 \\
+      \text{VIH}  & 0    & 166.\overline{6} & 12.1951 \\
+      \text{SIDA} & 0    & 0                & 12.1951 \\
+    \end{block}
+  \end{blockarray}
+\end{equation*}
+
+Luego la matriz $ G = SB $ viene dada por: 
+
+\begin{equation*}
+  G = 
+  \begin{blockarray}{cc}
+     & C_M \\
+    \begin{block}{c(c)}
+      \text{S}    & 1 \\
+      \text{VIH}  & 1 \\
+      \text{SIDA} & 1  \\
+    \end{block}
+  \end{blockarray}
+\end{equation*}
+
+Luego, a partir de la matriz $G$ podemos deducir que:
+
+$ F(S, M) = F(S, VIH) = F(S, SIDA) = 1 $
+
+y podemos seguir completando la matriz $F$.
+
+\begin{equation*}
+  F = 
+  \begin{blockarray}{ccccc}
+     & \text{S} & \text{VIH} & \text{SIDA} & \text{M} \\
+    \begin{block}{c(cccc)}
+      \text{S}    & - & - & - & 1 \\
+      \text{VIH}  & 0 & - & - & 1 \\
+      \text{SIDA} & 0 & 0 & - & 1 \\
+      \text{M}    & 0 & 0 & 0 & 1 \\
+    \end{block}
+  \end{blockarray}
+\end{equation*}
+
+Ahora, recordemos que la matriz $S$ es igual a la matriz $R$ suprimiendo las 
+filas y columnas de estados recurrentes. 
+
+\begin{equation*}
+  R = 
+  \begin{blockarray}{ccccc}
+     & \text{S} & \text{VIH} & \text{SIDA} & \text{M}\\
+    \begin{block}{c(cccc)}
+      \text{S}    & 1000 & 166.\overline{6} & 12.1951 & -\\
+      \text{VIH}  & 0    & 166.\overline{6} & 12.1951 & -\\
+      \text{SIDA} & 0    & 0                & 12.1951 & -\\
+      \text{M}    & -    & -                & -       & - \\
+    \end{block}
+  \end{blockarray}
+\end{equation*}
+
+Entonces como sabemos que $F(j, j) = 1 - \frac{1}{R(j, j)}$ y $F(i, j) = \frac{R(i, j)}{R(j, j)}$.
+Ahora podemos completar lo que resta de la matriz:
+
+\begin{itemize}
+  \item $ F(S, S) = 0.999$
+  \item $ F(S, \text{VIH}) = F(S, \text{SIDA}) = F(\text{VIH}, \text{SIDA}) = 1 $
+  \item $ F(\text{SIDA}, \text{SIDA}) = 0.9179$
+\end{itemize}
+  
+Y la matriz $F$ nos queda:
+
+\begin{equation*}
+  F = 
+  \begin{blockarray}{ccccc}
+     & \text{S} & \text{VIH} & \text{SIDA} & \text{M} \\
+    \begin{block}{c(cccc)}
+      \text{S}    & 0.999 & 1      & 1      & 1 \\
+      \text{VIH}  & 0     & 0.9939 & 1      & 1 \\
+      \text{SIDA} & 0     & 0      & 0.9179 & 1 \\
+      \text{M}    & 0     & 0      & 0      & 1 \\
+    \end{block}
+  \end{blockarray}
+\end{equation*}
+
+Los datos que nos provee la matriz $F$ se pueden interpretar como la probabilidad
+de pasar de un estado $e$ a un estado $e'$ en un tiempo en años finito.
+
+% ============================================================================
+
+\subsection*{Apartado c)}
+
+Basta hacer el siguiente calculo:
+
+$ A = S1 $ donde $1$ es el vector columna cuyas entradas son el número $1$
+
+\begin{equation*}
+  A = 
+  \begin{blockarray}{cc}
+     & \text{M} \\
+    \begin{block}{c(c)}
+      \text{S}    & 1178.8617 \\
+      \text{VIH}  & 178.8617 \\
+      \text{SIDA} & 12.1951 \\
+    \end{block}
+  \end{blockarray}
+\end{equation*}
+
+Esto lo podemos interpretar de la siguiente manera: \\
+La entrada $A(e, 1)$ con $e \in$ \{S, VIH, SIDA\} representa el tiempo promedio en años
+que le tomará pasar de el estado $e$ a estar muerto (pasar al estado M).
+
+% ============================================================================
+
+\subsection*{Apartado d)}
+
+\begin{itemize}
+  \item $\pi P = \pi$
+  \item $\displaystyle\sum_{i \in E} \pi(i) = 1$
+\end{itemize}
+
+\[
+\begin{cases}
+  0.999a = a \\
+  0.001a + 0.994b=b \\
+  0.006b+0.918c=c \\
+  0.082c+d = d \\
+  a+b+c+d=1 \\
+\end{cases}
+\]
+
+Utlizano un solucionador de ecuaciones online, obtenemos el vector $\pi$
+
+\begin{equation*}
+  \pi = 
+  \begin{blockarray}{cccc}
+     \text{S} & \text{VIH} & \text{SIDA} & \text{M} \\
+    \begin{block}{(cccc)}
+      0 & 0 & 0 & 1 \\
+    \end{block}
+  \end{blockarray}
+\end{equation*}
+
+Por lo tanto, para esta cadena sí existe una distribución invariante.
+
+% ============================================================================
+
+\subsection*{Apartado e)}
+
+que lo haga deos
+
+% ============================================================================
+% ============================================================================
+% ============================================================================
+
+\section{Ejercicio 6}
+
+\subsection*{Apartado a)}
+
+Podemos transformar el grafo dado en el enunciado en una Cadena de Markov,
+si asumimos que cualquier página A que no tiene hipervínculos tiene igual 
+probabilidad de ir a todas las páginas (A incluida). Entonces, en el grafo
+de la figura, basta con agregar aristas desde $g$ a todas las páginas
+distribuyendo uniformemente la probabilidad. 
+La matriz de transición P de la cadena nos queda de la siguiente forma:
+
+\begin{equation*}
+  P = 
+  \begin{blockarray}{cccccccc}
+     & \text{a} & \text{b} & \text{c} & \text{d} & \text{e} & \text{f} & \text{g} \\
+    \begin{block}{c(ccccccc)}
+      \text{a} & 0           & 0           & 0           & 0           & \frac{1}{2} & \frac{1}{2} & 0 \\
+      \text{b} & \frac{1}{3} & 0           & \frac{1}{3} & 0           & 0           & \frac{1}{3} & 0 \\
+      \text{c} & 0           & 0           & 0           & \frac{1}{2} & 0           & \frac{1}{2} & 0 \\
+      \text{d} & 0           & 0           & 0           & 0           & 0           & 1           & 0 \\
+      \text{e} & \frac{1}{4} & 0           & 0           & \frac{1}{4} & 0           & \frac{1}{4} & \frac{1}{4} \\
+      \text{f} & \frac{1}{2} & \frac{1}{2} & 0           & 0           & 0           & 0           & 0 \\
+      \text{g} & \frac{1}{7} & \frac{1}{7} & \frac{1}{7} & \frac{1}{7} & \frac{1}{7} & \frac{1}{7} & \frac{1}{7} \\
+    \end{block}
+  \end{blockarray}
+\end{equation*}
+
+% ============================================================================
+
+\subsection*{Apartado b)}
+
+% ============================================================================
+
+\subsection*{Apartado c)}
+
+El rango de cada página es la probabilidad a largo plazo de permanecer en ella,
+entonces, para encontrarlo necesitamos hallar su distribución límite. Como la matriz
+es irreducible y aperiódica podemos hallar la distrubución encontrando
+$\pi$ tal que cumpla con el siguiente sistema de ecuaciones:
+
+\begin{itemize}
+  \item $\pi P = \pi$
+  \item $\displaystyle\sum_{i \in E} \pi(i) = 1$
+\end{itemize}
+
+Usando la función steadyStates de la librería de cadenas de markov obtenemos:
+
+\begin{equation*}
+  \pi = 
+  \begin{blockarray}{ccccccc}
+    \text{a} & \text{b} & \text{c} & \text{d} & \text{e} & \text{f} & \text{g} \\
+    \begin{block}{(ccccccc)}
+      0.2440318 & 0.1591512 & 0.05835544 & 0.066313 & 0.127321 & 0.3076923 & 0.03713528 \\
+    \end{block}
+  \end{blockarray}
+\end{equation*}
+
+% ============================================================================
+% ============================================================================
+% ============================================================================
+
+\section{Ejercicio 7}
+
+\subsection*{Apartado a)}
+
+Podemos definir $N_t$ como un proceso de Poisson de parámetro $\lambda = 10$ que
+cuenta la cantidad de mensajes que llegaron en el intervalo [0, t], con $t_0 = 10:00hs, \;
+t_1 = 11:00hs$, etc. 
+
+(enunciar las 5 hipotesis)
+
+Queremos hallar $ P(N_2 = 18, N_7 = 70) $, observemos que si entran 18 mensajes en
+el intervalo $[0, 2]$ y 70 en el $[0, 7]$, entonces entran $70 - 18 = 52$ mensajes en
+el intervalo $(2, 7]$, entonces tenemos ahora que los intervalos $[0, 2] $ y $ (2, 7] $
+son disjuntos y entonces se tiene que:
+
+\begin{align*}
+  P(N_2 = 18, N_7 = 70) &= P(N_2 = 18, N_7 - N_2 = 52) \\
+                        &= P(N_2 = 18) \cdot P(N_7 - N_2 = 52) \\
+                        &= P(N_2 = 18) \cdot P(N_5 = 52) \\
+                        &= \frac{e^{-2(10)} \cdot (2 \cdot 10)^{18}}{18!} \cdot \frac{e^{-5(10)} \cdot (5 \cdot 10)^{52}}{52!} \\
+                        &= 0.0045
+\end{align*}
+
+Por lo tanto la probabilidad de que reciba 18 mensajes el mediodía y 70 a la tarde es de 0.0045.
+
+% ============================================================================
+
+\subsection*{Apartado b)}
+
+% ============================================================================
+% ============================================================================
+% ============================================================================
+
+\section{Ejercicio 8}
+
+\subsection*{Apartado a)}
+
+Sea P la matriz de transición.
+
+\begin{equation*}
+  P = 
+  \begin{blockarray}{ccccccc}
+    & & 80 & 135 & 139 & 445 & \text{No attack} \\
+    \begin{block}{cc(ccccc)}
+      80        & & 0            & 0            & 0            & 0            & 1 \\
+      135       & & 0            & \frac{8}{13} & \frac{3}{13} & \frac{1}{13} & \frac{1}{13} \\
+      139       & & \frac{1}{16} & \frac{3}{16} & \frac{3}{8}  & \frac{1}{4}  & \frac{1}{8} \\
+      445       & & 0            & \frac{1}{11} & \frac{4}{11} & \frac{5}{11} & \frac{1}{11} \\
+      \text{No} & & 0            & \frac{1}{8}  & \frac{1}{2}  & \frac{1}{8}  & \frac{1}{4} \\
+    \end{block}
+  \end{blockarray}
+\end{equation*}
+
+y sea el vector de distribución inicial $\pi_0 = (0, 0, 0, 0, 1)$
+
+Para obtener la probabilidad de cada estado después de dos semanas debemos calcular
+la matriz de transición en 2 pasos $\pi_0 \cdot P^2$ y obtenemos:
+
+\begin{equation*}
+  \begin{blockarray}{ccccc}
+    80 & 135 & 139 & 445 & \text{No attack} \\
+    \begin{block}{(ccccc)}
+      0.03125 & 0.2132867 & 0.3868007 & 0.2226836 & 0.145979 \\
+    \end{block}
+  \end{blockarray}
+\end{equation*}
+
+Por lo tanto, el puerto con más probabilidad de ser atacado después de dos semanas
+es el puerto 139, y el menos probable es el puerto 90.
+
+% ============================================================================
+
+\subsection*{Apartado b)}
+
+Podemos verificar en R que la matriz es aperiódica, irreducible y finita, 
+resultando ser ergódica:
+
+\begin{verbatim}
+  > period(MC)
+  [1] 1
+
+  > is.irreducible(MC)
+  [1] TRUE  
+\end{verbatim}
+
+Por lo tanto, la distribución invariante es única, resulta ser la distribución
+límite y viene dada por la solución al sistema de ecuaciones:
+
+\begin{itemize}
+  \item $\pi P = \pi$
+  \item $\displaystyle\sum_{i \in E} \pi(i) = 1$
+\end{itemize}
+
+Sea $ \pi = (a, b, c, d, e) $, planteamos el sistema de ecuaciones
+\[
+\begin{cases}
+  \frac{1}{16}c = a \\
+  \frac{8}{13}b + \frac{3}{16}c + \frac{1}{11}d + \frac{1}{8}e = b \\
+  \frac{3}{13}b + \frac{3}{8}c + \frac{4}{11}d + \frac{1}{2}e = c \\
+  \frac{1}{13}b + \frac{1}{4}c + \frac{5}{11}d + \frac{1}{8}e = d \\
+  a + \frac{1}{13}b + \frac{1}{8}c + \frac{1}{11}d + \frac{1}{4}e = e \\
+  a + b + c + d + e = 1 \\
+\end{cases}
+\]
+
+Resolviendo el sistema obtenemos que
+
+\begin{equation*}
+  \pi = 
+  \begin{blockarray}{ccccc}
+    80 & 135 & 139 & 445 & \text{No attack} \\
+    \begin{block}{(ccccc)}
+      0.02146667 & 0.2669333 & 0.3434667 & 0.2273333 & 0.1408 \\
+    \end{block}
+  \end{blockarray}
+\end{equation*}
+
+% TODO: 5)e), 6)b) y 7)b)
+
 \end{document}
