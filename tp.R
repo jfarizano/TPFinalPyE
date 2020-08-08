@@ -203,6 +203,8 @@ ej6 <- function() {
   MC <<- new("markovchain", states = rownames(P), transitionMatrix = P, name="PageRank")
   pi <- c(1/7, 1/7, 1/7, 1/7, 1/7, 1/7, 1/7)
   Sim <<- rmarkovchain(MC, n = 100, t0 = sample(rownames(P), 1, T, pi)[1])
+  plot(table(Sim), type = "h", xlab = "Página", ylab = "Cantidad de visitas", font.lab = 2,
+       ylim = c(0, 35), main = "Cantidad de visitas a las páginas en la simulación")
 }
 
 # ----------------------------------------------------------------------------

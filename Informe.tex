@@ -14,6 +14,7 @@
 \usepackage{yhmath}
 \usepackage{mathtools}
 \usepackage{blkarray, bigstrut}
+\def\Big#1{\makebox(0,0){\huge#1}}
 
 % ============================================================================
 % ============================================================================
@@ -647,7 +648,7 @@ Luego la matriz $ G = SB $ viene dada por:
 
 Luego, a partir de la matriz $G$ podemos deducir que:
 
-$ F(S, M) = F(S, VIH) = F(S, SIDA) = 1 $
+$ F(S, M) = F(S, \text{VIH}) = F(S, \text{SIDA}) = 1 $
 
 y podemos seguir completando la matriz $F$.
 
@@ -768,11 +769,112 @@ Por lo tanto, para esta cadena sí existe una distribución invariante.
 
 \subsection*{Apartado e)}
 
-que lo haga deos
+La matriz P ya se encuentra descompuesta en su forma canónica:
 
-% ============================================================================
-% ============================================================================
-% ============================================================================
+\begin{equation*}
+  P = 
+  \begin{blockarray}{ccccc}
+    & \text{S} & \text{VIH} & \text{SIDA} & \text{M} \\
+   \begin{block}{c(ccc|c)}
+     \text{S}    & & & & \\
+     \text{VIH}  & & \Big{Q} & & \Big{B} \\
+     \text{SIDA} & & & & \\
+     \cline{2-5}
+     \text{M}    & & 0 & & I \\
+   \end{block}
+  \end{blockarray}
+  \;\; =
+  \begin{blockarray}{ccccc}
+     & \text{S} & \text{VIH} & \text{SIDA} & \text{M} \\
+    \begin{block}{c(ccc|c)}
+      \text{S}    & 0.999 & 0.001 & 0     & 0 \\
+      \text{VIH}  & 0     & 0.994 & 0.006 & 0 \\
+      \text{SIDA} & 0     & 0     & 0.918 & 0.082 \\
+      \cline{2-5}
+      \text{M}    & 0     & 0     & 0     & 1 \\
+    \end{block}
+  \end{blockarray}
+\end{equation*}
+
+Con la ayuda del siguiente lema podremos calcular la distribución límite: \\
+
+\textbf{Lema:} Sea A una matriz cuadrada tal que $ A^n \rightarrow 0 $ cuando
+$ n \rightarrow \infty $, entonces:
+
+\begin{equation*}
+  \sum_{n = 0}^{\infty} A^n = (I - A)^{-1}
+\end{equation*}
+
+Y ayudándonos de la multiplicación por bloques de matrices, tenemos lo siguiente:
+
+\begin{equation*}
+  P^n = 
+  \begin{blockarray}{cc}
+   \begin{block}{(c|c)}
+    Q^n & (I + Q + \dots + Q^{n-1})B \\
+    \cline{1-2}
+    0 & I \\
+   \end{block}
+  \end{blockarray}
+\end{equation*}
+
+Entonces como $ Q^n \rightarrow 0 $ cuando $ n \rightarrow 0 $ podemos usar el lema auxiliar
+para hallar $ \displaystyle\lim_{n \rightarrow \infty} P^n $:
+
+\begin{align*}
+  \displaystyle\lim_{n \rightarrow \infty} P^n &=
+  \begin{blockarray}{cc}
+    \begin{block}{(c|c)}
+     Q^n & (I + Q + \dots + Q^{n-1})B \\
+     \cline{1-2}
+     0 & I \\
+    \end{block}
+   \end{blockarray} \\
+  & =
+  \begin{blockarray}{cc}
+    \begin{block}{(c|c)}
+     \displaystyle\lim_{n \rightarrow \infty} Q^n & \displaystyle\lim_{n \rightarrow \infty} (I + Q + \dots + Q^{n-1})B \\
+     \cline{1-2}
+     0 & I \\
+    \end{block}
+   \end{blockarray} \\
+  & = 
+  \begin{blockarray}{cc}
+    \begin{block}{(c|c)}
+     0 & (I - Q)^{-1}B \\
+     \cline{1-2}
+     0 & I \\
+    \end{block}
+  \end{blockarray} \\
+\end{align*}
+
+Realizando los calculos con nuestra matriz mediante uso de un software obtenemos:
+
+\begin{equation*}
+  \displaystyle\lim_{n \rightarrow \infty} P^n =
+  \begin{blockarray}{ccccc}
+    & \text{S} & \text{VIH} & \text{SIDA} & \text{M} \\
+   \begin{block}{c(cccc)}
+     \text{S}    & 0 & 0 & 0 & 1 \\
+     \text{VIH}  & 0 & 0 & 0 & 1 \\
+     \text{SIDA} & 0 & 0 & 0 & 1 \\
+     \text{M}    & 0 & 0 & 0 & 1 \\
+   \end{block}
+ \end{blockarray}
+\end{equation*}
+
+Por lo tanto la distribución límite viene dada por el siguiente vector fila, que
+coincide con la distribución invariante obtenida en el apartado d).
+
+\begin{equation*}
+  \pi = 
+  \begin{blockarray}{cccc}
+     \text{S} & \text{VIH} & \text{SIDA} & \text{M} \\
+    \begin{block}{(cccc)}
+      0 & 0 & 0 & 1 \\
+    \end{block}
+  \end{blockarray}
+\end{equation*}
 
 \section{Ejercicio 6}
 
@@ -805,6 +907,16 @@ La matriz de transición P de la cadena nos queda de la siguiente forma:
 
 \subsection*{Apartado b)}
 
+Simulamos 100 pasos del proceso y obtuvimos los siguientes datos:
+
+\begin{figure}[h!]
+  \begin{center}
+    \begin{subfigure}[b]{0.9\linewidth}
+      \includegraphics[width=\linewidth]{bastonesPageRank.pdf}
+    \end{subfigure}
+  \end{center}
+\end{figure}
+
 % ============================================================================
 
 \subsection*{Apartado c)}
@@ -830,6 +942,9 @@ Usando la función steadyStates de la librería de cadenas de markov obtenemos:
     \end{block}
   \end{blockarray}
 \end{equation*}
+
+Si miramos el gráfico y los datos obtenidos en el apartado anterior podemos ver que la simulación 
+se corresponde bastante con la distribución límite hallada recién.
 
 % ============================================================================
 % ============================================================================
@@ -952,6 +1067,6 @@ Resolviendo el sistema obtenemos que
   \end{blockarray}
 \end{equation*}
 
-% TODO: 5)e), 6)b) y 7)b)
+% TODO: 6)b), enunciar 5 hipótesis en 7)a) y 7)b)
 
 \end{document}
