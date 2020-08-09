@@ -734,6 +734,7 @@ que le tomará pasar de el estado $e$ a estar muerto (pasar al estado M).
 
 % ============================================================================
 
+\newpage
 \subsection*{Apartado d)}
 
 \begin{itemize}
@@ -905,6 +906,7 @@ La matriz de transición P de la cadena nos queda de la siguiente forma:
 
 % ============================================================================
 
+\newpage
 \subsection*{Apartado b)}
 
 Simulamos 100 pasos del proceso y obtuvimos los siguientes datos:
@@ -916,6 +918,8 @@ Simulamos 100 pasos del proceso y obtuvimos los siguientes datos:
     \end{subfigure}
   \end{center}
 \end{figure}
+
+Donde podemos observar que las páginas más visitadas son f, a y b.
 
 % ============================================================================
 
@@ -943,8 +947,9 @@ Usando la función steadyStates de la librería de cadenas de markov obtenemos:
   \end{blockarray}
 \end{equation*}
 
-Si miramos el gráfico y los datos obtenidos en el apartado anterior podemos ver que la simulación 
-se corresponde bastante con la distribución límite hallada recién.
+Si miramos el gráfico y los datos obtenidos en el apartado anterior podemos
+ver que la simulación se corresponde bastante con la distribución límite hallada
+recién, donde a mayor rango tenga la página, más visitas recibió en la simulación.
 
 % ============================================================================
 % ============================================================================
@@ -956,9 +961,26 @@ se corresponde bastante con la distribución límite hallada recién.
 
 Podemos definir $N_t$ como un proceso de Poisson de parámetro $\lambda = 10$ que
 cuenta la cantidad de mensajes que llegaron en el intervalo [0, t], con $t_0 = 10:00hs, \;
-t_1 = 11:00hs$, etc. 
+t_1 = 11:00hs$, etc. Dicho proceso cumple las siguientes hipótesis:
 
-(enunciar las 5 hipotesis)
+\begin{enumerate}
+  \item El número de mensajes recibidos durante intervalos de tiempo
+        no sobrepuestos son variables aleatorias independientes.
+  \item Si tenemos otra variable $ M_t $ que representa el número de 
+        mensajes recibidos en un intervalo $[t_1, t_1 + t]$ para cualquier
+        $ t_1 > 0 $, entonces ambas variables tienen la misma distribución de
+        probabilidades. Es decir, la distribución depende sólo de la longitud
+        del intervalo.
+  \item Si definimos $p_n(t) = P(N_t = n)$. Tenemos que si $\Delta_t$
+        es suficientemente pequeño entonces $p_1(\Delta_t) \simeq \lambda \Delta_t$. 
+        Esto quiere decir, que la probabilidad de recibir exactamente un mensaje en
+        ese intervalo es directamente proporcional a la longitud del intervalo.
+  \item $\displaystyle\sum_{k = 2}^{\infty} p_k(\Delta_t) \simeq 0 $ esto 
+        implica que $ p_k(\Delta_t) \rightarrow 0 $, $k \geq 2$.
+        Esto significa que la probabilidad de recibir dos o más
+        mensajes en un intervalo suficientemente pequeño es despreciable.
+  \item $ N_0 = 0 $, o equivalentemente, $ p_0(0) = 1 $.
+\end{enumerate}
 
 Queremos hallar $ P(N_2 = 18, N_7 = 70) $, observemos que si entran 18 mensajes en
 el intervalo $[0, 2]$ y 70 en el $[0, 7]$, entonces entran $70 - 18 = 52$ mensajes en
@@ -1067,6 +1089,6 @@ Resolviendo el sistema obtenemos que
   \end{blockarray}
 \end{equation*}
 
-% TODO: 6)b), enunciar 5 hipótesis en 7)a) y 7)b)
+% TODO: 6)b) y 7)b)
 
 \end{document}

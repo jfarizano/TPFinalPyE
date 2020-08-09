@@ -235,12 +235,8 @@ ej7 <- function(t) {
   S <<- S
   i <<- i
   
-  plot(c(0,S), (0:i), type = "s", xlim = c(0, t))
+  # plot(c(0,S), (0:i), type = "s", xlim = c(0, t))
   hist(X, freq = F)
-}
-
-densidadSn <- function(n, t) {
-  ((10 ^ n) * t ^ (n - 1) * exp(-10 * t)) / factorial(n-1)
 }
 
 # ----------------------------------------------------------------------------
