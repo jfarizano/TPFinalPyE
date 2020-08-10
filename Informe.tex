@@ -279,7 +279,7 @@ Y simulamos una trayectoria que graficamos
 
 \begin{figure}[h!]
   \begin{center}
-    \begin{subfigure}[b]{0.9\linewidth}
+    \begin{subfigure}[b]{\linewidth}
       \includegraphics[width=\linewidth]{trayectoriaS.pdf}
     \end{subfigure}
   \end{center}
@@ -312,7 +312,7 @@ Para simular la trayectoria del jugador utilizamos el siguiente código en R:
   }
 \end{verbatim}
 
-% ============================================================================
+% =====================================================0.9=======================
 
 \subsection*{Apartado b)}
 
@@ -321,7 +321,7 @@ siguiente gráfico
 
 \begin{figure}[h!]
   \begin{center}
-    \begin{subfigure}[b]{0.9\linewidth}
+    \begin{subfigure}[b]{\linewidth}
       \includegraphics[width=\linewidth]{trayectoriaGamblers.pdf}
     \end{subfigure}
   \end{center}
@@ -490,7 +490,7 @@ argumento N la cantidad de veces que se realizará la simulación:
 }
 \end{verbatim}
 
-Al realizar la simulación una vez, obtenemos el siguiente resultado:
+Al realizar la simulación un millón de veces, obtenemos el siguiente resultado:
 
 \begin{verbatim}
   > ratonLaboratorio(1000000)
@@ -505,7 +505,6 @@ Definimos las variable aleatorias: \\
 \begin{center}
   X: tiempo (en minutos) que tarda el ratón en salir del laberinto.
 \end{center}
-% Y: borrador -> opcion entre \{puerta izquierda y salir, puerta izquierda y volver, puerta derecha\}
 
 \[
   Y = \begin{cases}
@@ -909,17 +908,38 @@ La matriz de transición P de la cadena nos queda de la siguiente forma:
 \newpage
 \subsection*{Apartado b)}
 
-Simulamos 100 pasos del proceso y obtuvimos los siguientes datos:
+Para realizar la simulación, utilizamos la siguiente función en R:
+\begin{verbatim}
+  simPageRank <- function() {
+    States <- as.character(1:7)
+    P <<- matrix(c(0, 0, 0, 0, 1/2, 1/2, 0, 
+                  1/3, 0, 1/3, 0, 0, 1/3, 0,
+                  0, 0, 0, 1/2, 0, 1/2, 0,
+                  0, 0, 0, 0, 0, 1, 0,
+                  1/4, 0, 0, 1/4, 0, 1/4, 1/4,
+                  1/2, 1/2, 0, 0, 0, 0, 0,
+                  1/7, 1/7, 1/7, 1/7, 1/7, 1/7, 1/7), nrow = 7, ncol = 7, byrow = T,
+                dimnames = list(States, States))
+    MC <<- new("markovchain", states = States, transitionMatrix = P, name="PageRank")
+    pi <- c(1/7, 1/7, 1/7, 1/7, 1/7, 1/7, 1/7)
+    Sim <<- rmarkovchain(MC, n = 100, t0 = sample(States, 1, T, pi)[1])
+    
+    plot(1:100, Sim, type = "b", xlab = "Instante", ylab = "Página visitada",
+         main = "Recorrido de 100 pasos del proceso", yaxt = "n")
+    axis(side = 2, at = 1:7, labels = c("a", "b", "c", "d", "e", "f", "g"))
+  }
+\end{verbatim}
+
+Simulamos 100 pasos del proceso y obtuvimos el siguiente recorrido:
 
 \begin{figure}[h!]
   \begin{center}
-    \begin{subfigure}[b]{0.9\linewidth}
-      \includegraphics[width=\linewidth]{bastonesPageRank.pdf}
+    \begin{subfigure}[b]{\linewidth}
+      \includegraphics[width=\linewidth]{recorridoPageRank.pdf}
     \end{subfigure}
   \end{center}
 \end{figure}
 
-Donde podemos observar que las páginas más visitadas son f, a y b.
 
 % ============================================================================
 
@@ -946,10 +966,6 @@ Usando la función steadyStates de la librería de cadenas de markov obtenemos:
     \end{block}
   \end{blockarray}
 \end{equation*}
-
-Si miramos el gráfico y los datos obtenidos en el apartado anterior podemos
-ver que la simulación se corresponde bastante con la distribución límite hallada
-recién, donde a mayor rango tenga la página, más visitas recibió en la simulación.
 
 % ============================================================================
 % ============================================================================
@@ -1000,6 +1016,15 @@ Por lo tanto la probabilidad de que reciba 18 mensajes el mediodía y 70 a la ta
 % ============================================================================
 
 \subsection*{Apartado b)}
+
+\begin{figure}[h!]
+  \begin{center}
+    \begin{subfigure}[b]{\linewidth}
+      \includegraphics[width=\linewidth]{densidadTiempoInterarribo.pdf}
+    \end{subfigure}
+  \end{center}
+\end{figure}
+
 
 % ============================================================================
 % ============================================================================
@@ -1089,6 +1114,6 @@ Resolviendo el sistema obtenemos que
   \end{blockarray}
 \end{equation*}
 
-% TODO: 6)b) y 7)b)
+% TODO: 7)b)
 
 \end{document}

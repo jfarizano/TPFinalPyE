@@ -191,7 +191,8 @@ ej5 <- function() {
 
 # Ej 6
 
-ej6 <- function() {
+simPageRank <- function() {
+  States <- as.character(1:7)
   P <<- matrix(c(0, 0, 0, 0, 1/2, 1/2, 0, 
                 1/3, 0, 1/3, 0, 0, 1/3, 0,
                 0, 0, 0, 1/2, 0, 1/2, 0,
@@ -199,12 +200,13 @@ ej6 <- function() {
                 1/4, 0, 0, 1/4, 0, 1/4, 1/4,
                 1/2, 1/2, 0, 0, 0, 0, 0,
                 1/7, 1/7, 1/7, 1/7, 1/7, 1/7, 1/7), nrow = 7, ncol = 7, byrow = T,
-              dimnames = list(c("a", "b", "c", "d", "e", "f", "g"), c("a", "b", "c", "d", "e", "f", "g")))
-  MC <<- new("markovchain", states = rownames(P), transitionMatrix = P, name="PageRank")
-  pi <- c(1/7, 1/7, 1/7, 1/7, 1/7, 1/7, 1/7)
-  Sim <<- rmarkovchain(MC, n = 100, t0 = sample(rownames(P), 1, T, pi)[1])
-  plot(table(Sim), type = "h", xlab = "Página", ylab = "Cantidad de visitas", font.lab = 2,
-       ylim = c(0, 35), main = "Cantidad de visitas a las páginas en la simulación")
+              dimnames = list(States, States))
+  MC <<- new("markovchain", states = States, transitionMatrix = P, name="PageRank")
+  Sim <<- as.integer(rmarkovchain(MC, n = 100, t0 = "7"))
+  
+  plot(1:100, Sim, type = "b", xlab = "Instante", ylab = "Página visitada",
+       main = "Recorrido de 100 pasos del proceso", yaxt = "n", ylim = c(1, 7))
+  axis(side = 2, at = 1:7, labels = c("a", "b", "c", "d", "e", "f", "g"))
 }
 
 # ----------------------------------------------------------------------------
@@ -235,8 +237,11 @@ ej7 <- function(t) {
   S <<- S
   i <<- i
   
-  # plot(c(0,S), (0:i), type = "s", xlim = c(0, t))
-  hist(X, freq = F)
+  hist(X, prob = T, col = "peachpuff", xlab = "Tiempo interarribo", ylab = "Densidad",
+       main = "Densidad de tiempo interarribo")
+  curve(dexp(x, 10), col = "chocolate1", lwd = 2, add = T)
+  legend("topright", legend = c("Función de densidad teórica"),
+         col = c("chocolate1"), lty=1, cex = 0.8)
 }
 
 # ----------------------------------------------------------------------------
