@@ -1,4 +1,3 @@
-library(diagram)
 library(markovchain)
 
 # ----------------------------------------------------------------------------
@@ -56,15 +55,14 @@ trayectoriaD <- function(N, P) {
 
 trayectoriaS <- function(N, P) {
   D <- trayectoriaD(N, P)
-  S <- c(0)
-  S[1] = 2 * D[1] -1
+  S <- c(D[1])
   for (i in 2:N) {
     S[i] <- S[i - 1] + D[i]
   }
-  plot(S, type = "p", xlab = "Instante", ylab = "Valor de S",  main = "Trayectoria de Sn",
-       xlim = c(1, N), ylim = c(min(S), max(S)), xaxt = "n", yaxt = "n")
-  axis(side = 1, seq(1, N, 1))
-  axis(side = 2, at = seq(min(S), max(S), 1))
+  plot(c(0, S), type = "p", xlab = "Instante", ylab = "Valor de S",  main = "Trayectoria del proceso Sn",
+       xlim = c(1, N+1), ylim = c(min(S), max(c(0, S))), xaxt = "n", yaxt = "n")
+  axis(side = 1, seq(1, N+1, 1), labels = as.character(0:N))
+  axis(side = 2, at = seq(min(S), max(c(0, S)), 1))
   S
 }
 
@@ -101,7 +99,6 @@ calcularProbRuinaCadena <- function(P, K, S, N, Simulaciones) {
 
 calcularProbRuinaIter <- function(P, K, S, Simulaciones) {
   Arruinado <- 0
-  Millonario <- 0
   for (i in 1:Simulaciones) {
     Resultado <- K
     Pasos <- 0
@@ -227,18 +224,22 @@ ej7 <- function(t) {
     
   }
   
+  X <<- X
+  S <<- S
+  i <<- i
+  
+  plot(c(0,S), (0:i), type = "s", xlim = c(0, t), xlab = "Tiempo transcurrido",
+       ylab = "Mensajes recibidos", main = "Trayectoria del proceso de conteo")
+  abline(v = t, lty = 2)
+  
   if (S[i] > t) {
     X <- X[1 : i - 1]
     S <- S[1 : i- 1]
     i <- i - 1
   }
   
-  X <<- X
-  S <<- S
-  i <<- i
-  
   hist(X, prob = T, col = "peachpuff", xlab = "Tiempo interarribo", ylab = "Densidad",
-       main = "Densidad de tiempo interarribo")
+       main = "Tiempo de llegada entre mensajes")
   curve(dexp(x, 10), col = "chocolate1", lwd = 2, add = T)
   legend("topright", legend = c("Función de densidad teórica"),
          col = c("chocolate1"), lty=1, cex = 0.8)

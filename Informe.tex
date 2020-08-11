@@ -266,8 +266,7 @@ Para simular el proceso $ S_n $ utilizamos la siguiente función escrita en R
 \begin{verbatim}
   trayectoriaS <- function(N, P) {
     D <- trayectoriaD(N, P)
-    S <- c(0)
-    S[1] = 2 * D[1] -1
+    S <- c(D[1])
     for (i in 2:N) {
       S[i] <- S[i - 1] + D[i]
     }
@@ -275,7 +274,8 @@ Para simular el proceso $ S_n $ utilizamos la siguiente función escrita en R
   }
 \end{verbatim}
 
-Y simulamos una trayectoria que graficamos
+Simulamos una trayectoria utilizando los mismos parámetros que en el apartado
+a) y graficamos
 
 \begin{figure}[h!]
   \begin{center}
@@ -306,9 +306,6 @@ Para simular la trayectoria del jugador utilizamos el siguiente código en R:
       Trayectoria = c(Trayectoria, Resultado)
       Pasos = Pasos + 1
     }
-    
-    plot(0:Pasos, Trayectoria, type = "p", xlab = "Instante", ylab ="Cantidad de dinero",
-         main = "Trayectoria del jugador", ylim = c(0, S))
   }
 \end{verbatim}
 
@@ -339,7 +336,6 @@ Tomamos los valores: $ k = 3, \; S = 5,\; p = 0.65 $.
 \begin{verbatim}
   calcularProbRuinaIter <- function(P, K, S, Simulaciones) {
     Arruinado <- 0
-    Millonario <- 0
     for (i in 1:Simulaciones) {
       Resultado <- K
       Pasos <- 0
@@ -365,7 +361,7 @@ Y obtenemos como resultado:
 
 \subsubsection*{Teórico}
 
-Podemos modelar el problema como una Cadena de Markov estados: E = {0, 1, 2, 3, 4, 5},
+Podemos modelar el problema como una Cadena de Markov estados: E = \{0, 1, 2, 3, 4, 5\},
 donde la matriz de transición es:
 
 \begin{equation*}
@@ -383,11 +379,11 @@ donde la matriz de transición es:
   \end{blockarray}
 \end{equation*}
 
-Queremos estimar la probabilidad de ruinar del jugador, esto es hallar la $ F(k = 3, 0) $. 
+Queremos estimar la probabilidad de ruina del jugador, esto es hallar la $ F(k = 3, 0) $. 
 Vimos en teoría que:
 
 \begin{equation*}
-  G(i, \; j) = F(i, \;, k) \forall k \in C_j
+  G(i, \; j) = F(i, \;, k) \; \forall k \in C_j
 \end{equation*}
 
 Sabemos que $ G = SB $, donde $ S = (I - Q)^{-1} $. Entonces procedemos a 
@@ -501,7 +497,7 @@ Al realizar la simulación un millón de veces, obtenemos el siguiente resultado
 
 \subsection*{Apartado b)}
 
-Definimos las variable aleatorias: \\
+Definimos las variables aleatorias: \\
 \begin{center}
   X: tiempo (en minutos) que tarda el ratón en salir del laberinto.
 \end{center}
@@ -736,6 +732,9 @@ que le tomará pasar de el estado $e$ a estar muerto (pasar al estado M).
 \newpage
 \subsection*{Apartado d)}
 
+Para hallar la distribución invariante planteamos el siguiente sistema
+de ecuaciones:
+
 \begin{itemize}
   \item $\pi P = \pi$
   \item $\displaystyle\sum_{i \in E} \pi(i) = 1$
@@ -751,7 +750,7 @@ que le tomará pasar de el estado $e$ a estar muerto (pasar al estado M).
 \end{cases}
 \]
 
-Utlizano un solucionador de ecuaciones online, obtenemos el vector $\pi$
+Utlizando un solucionador de ecuaciones online, obtenemos el vector $\pi$
 
 \begin{equation*}
   \pi = 
@@ -923,10 +922,6 @@ Para realizar la simulación, utilizamos la siguiente función en R:
     MC <<- new("markovchain", states = States, transitionMatrix = P, name="PageRank")
     pi <- c(1/7, 1/7, 1/7, 1/7, 1/7, 1/7, 1/7)
     Sim <<- rmarkovchain(MC, n = 100, t0 = sample(States, 1, T, pi)[1])
-    
-    plot(1:100, Sim, type = "b", xlab = "Instante", ylab = "Página visitada",
-         main = "Recorrido de 100 pasos del proceso", yaxt = "n")
-    axis(side = 2, at = 1:7, labels = c("a", "b", "c", "d", "e", "f", "g"))
   }
 \end{verbatim}
 
@@ -1015,7 +1010,41 @@ Por lo tanto la probabilidad de que reciba 18 mensajes el mediodía y 70 a la ta
 
 % ============================================================================
 
+\newpage
+
 \subsection*{Apartado b)}
+
+Mediante el siguiente código en R realizamos una simulación del proceso:
+
+\begin{verbatim}
+  ej7 <- function(t) {
+    i <- 1
+    X <- c(rexp(1, 10))
+    S <- c(X[1])
+    
+    while (S[i] <= t) {
+      i <- i + 1
+      X[i] <- rexp(1, 10)
+      S[i] <- X[i] + S[i - 1]
+      
+    }
+  }
+\end{verbatim}
+
+En el gráfico de abajo podemos ver la trayectoria de la simulación realizada
+con un tiempo $t = 48$:
+
+\begin{figure}[h!]
+  \begin{center}
+    \begin{subfigure}[b]{\linewidth}
+      \includegraphics[width=\linewidth]{trayectoriaMensajes.pdf}
+    \end{subfigure}
+  \end{center}
+\end{figure}
+
+En el siguiente histograma representamos los tiempos entre llegadas en el
+intervalo [0, 48], comparándolo con la función teórica de densidad del tiempo (en horas)
+interarribos.
 
 \begin{figure}[h!]
   \begin{center}
@@ -1029,6 +1058,8 @@ Por lo tanto la probabilidad de que reciba 18 mensajes el mediodía y 70 a la ta
 % ============================================================================
 % ============================================================================
 % ============================================================================
+
+\newpage
 
 \section{Ejercicio 8}
 
@@ -1113,7 +1144,5 @@ Resolviendo el sistema obtenemos que
     \end{block}
   \end{blockarray}
 \end{equation*}
-
-% TODO: 7)b)
 
 \end{document}
