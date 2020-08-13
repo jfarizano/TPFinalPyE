@@ -56,8 +56,8 @@ como parámetro la probabilidad $ p $ de que salga cara al tirar la moneda. Como
 la moneda está equilibrada, en este caso la función tomará $ p = 0.5 $.
 
 \begin{verbatim}
-  simularCienTiradas <- function(P) {
-    Sim <- sample(c("Cara", "Cruz"), 100, T, c(P, 1 - P))
+  simularCienTiradas <- function(p) {
+    Sim <- sample(c("Cara", "Cruz"), 100, T, c(p, 1 - p))
     length(which(Sim == "Cara"))
   }
 \end{verbatim}
@@ -82,25 +82,25 @@ interpretamos a $ X $ como $ X_{100} $.
 \subsubsection*{Utilizando la simulación:}
 
 Para hallar la $ P(X = 1) $ y la $ E(X) $ utilizamos el siguiente código, 
-donde los argumentos recibidos $ N $ y $ P $ representan la cantidad de veces
-que se simularán las cien tiradas (siendo N arbitrariamente grande) y P
+donde los argumentos recibidos $ n $ y $ p $ representan la cantidad de veces
+que se simularán las cien tiradas (siendo $n$ arbitrariamente grande) y $p$
 es análoga al apartado a). En la función la variable \texttt{Acumulador}
 es la suma de la cantidad de veces que salió cara en todas las simulaciones
 y la variable \texttt{Uno} representa la cantidad de veces que una simulación
 dió un numero de caras igual a uno.
 
 \begin{verbatim}
-  simularCienPorN <- function(N, P) {
+  simularCienPorN <- function(n, p) {
     Acumulador <- 0
     Uno <- 0
-    for (i in 1:N) {
-      Sim <- simularCienTiradas(P)
+    for (i in 1:n) {
+      Sim <- simularCienTiradas(p)
       Acumulador <- Acumulador + Sim
       if (Sim == 1) {
         Uno <- Uno + 1
       }
     }
-    c(Uno / N, Acumulador / N)
+    c(Uno / n, Acumulador / n)
   }
 \end{verbatim}
 
@@ -154,13 +154,13 @@ En este apartado, también se realizó de forma teórica y utilizando la simulac
 Utilizamos el siguiente código:
 
 \begin{verbatim}
-  tresCaras <- function(N, P) {
+  tresCaras <- function(n, p) {
     Acumulador <- 0
-    for (i in 1:N) {
+    for (i in 1:n) {
       Veces <- 0
       Tiradas <- 0
       while(Veces < 3) {
-        Sim <- sample(c("Cara", "Cruz"), 1, T, c(P, 1 - P))
+        Sim <- sample(c("Cara", "Cruz"), 1, T, c(p, 1 - p))
         if (Sim[1] == "Cara") {
           Veces <- Veces + 1
         }
@@ -168,7 +168,7 @@ Utilizamos el siguiente código:
       }
       Acumulador <- Acumulador + Tiradas
     }
-    Acumulador / N
+    Acumulador / n
   }
 \end{verbatim}
 
@@ -241,10 +241,10 @@ De estas simulaciones, obtuvimos los siguientes resultados:
 Para simular el proceso $ D_n $ utilizamos la siguiente función escrita en R
 
 \begin{verbatim}
-  trayectoriaD <- function(N, P) {
-    Sim <- sample(c(1, 0), N, T, c(P, 1 - P))
+  trayectoriaD <- function(n, p) {
+    Sim <- sample(c(1, 0), n, T, c(p, 1 - p))
     D <- vector()
-    for (i in 1:N) {
+    for (i in 1:n) {
       D[i] <- 2 * Sim[i] - 1
     }
     D
@@ -264,10 +264,10 @@ está equilibrada) realizamos lo siguiente
 Para simular el proceso $ S_n $ utilizamos la siguiente función escrita en R
 
 \begin{verbatim}
-  trayectoriaS <- function(N, P) {
-    D <- trayectoriaD(N, P)
+  trayectoriaS <- function(n, p) {
+    D <- trayectoriaD(n, p)
     S <- c(D[1])
-    for (i in 2:N) {
+    for (i in 2:n) {
       S[i] <- S[i - 1] + D[i]
     }
     S
@@ -296,16 +296,17 @@ a) y graficamos
 Para simular la trayectoria del jugador utilizamos el siguiente código en R:
 
 \begin{verbatim}
-  gamblersRuinTrayectoria <- function(P, K, S) {
+  gamblersRuinTrayectoria <- function(p, k, S) {
     Pasos = 0
-    Resultado = K
-    Trayectoria = c(K)
+    Resultado = k
+    Trayectoria = c(k)
     
     while (Resultado != 0 & Resultado != S) {
-      Resultado = Resultado + sample(c(1, -1), 1, T, c(P, 1 - P))[1]
+      Resultado = Resultado + sample(c(1, -1), 1, T, c(p, 1 - p))[1]
       Trayectoria = c(Trayectoria, Resultado)
       Pasos = Pasos + 1
     }
+    Trayectoria
   }
 \end{verbatim}
 
@@ -313,7 +314,7 @@ Para simular la trayectoria del jugador utilizamos el siguiente código en R:
 
 \subsection*{Apartado b)}
 
-Utilizando el código escrito en a) con los valores $P = 0.6, \; K = 35, \; S = 100$ obtuvimos el
+Utilizando el código escrito en a) con los valores $p = 0.6, \; k = 35, \; S = 100$ obtuvimos el
 siguiente gráfico
 
 \begin{figure}[h!]
@@ -329,19 +330,19 @@ siguiente gráfico
 \subsection*{Apartado c):}
 
 Resolvemos este apartado por simulación y luego comprobamos los resultados teóricamente.
-Tomamos los valores: $ k = 3, \; S = 5,\; p = 0.65 $.
+Tomamos los valores: $p = 0.65, \; k = 3, \; S = 5 $.
 
 \subsubsection*{Simulación}
 
 \begin{verbatim}
-  calcularProbRuinaIter <- function(P, K, S, Simulaciones) {
+  calcularProbRuinaIter <- function(p, k, S, Simulaciones) {
     Arruinado <- 0
     for (i in 1:Simulaciones) {
-      Resultado <- K
+      Resultado <- k
       Pasos <- 0
 
       while (Resultado != 0 & Resultado != S) {
-        Resultado <- Resultado + sample(c(1, -1), 1, T, c(P, 1 - P))[1]
+        Resultado <- Resultado + sample(c(1, -1), 1, T, c(p, 1 - p))[1]
         Pasos <- Pasos + 1
       }
       if (Resultado == 0) {
@@ -454,13 +455,13 @@ se obtuvo una buena aproximación a la probabilidad deseada.
 \subsection*{Apartado a)}
 
 Realizamos la simulación utilizando el siguiente código en R, siendo el 
-argumento N la cantidad de veces que se realizará la simulación:
+argumento $n$ la cantidad de veces que se realizará la simulación:
 
 \begin{verbatim}
-  ratonLaboratorio <- function(N) {
+  ratonLaboratorio <- function(n) {
     Total = 0
 
-    for (i in 1:N) {
+    for (i in 1:n) {
       Tiempo = 0
       Resultado = "Seguir"
 
@@ -482,7 +483,7 @@ argumento N la cantidad de veces que se realizará la simulación:
       Total = Total + Tiempo
     }
   
-    Total / N
+    Total / n
 }
 \end{verbatim}
 
@@ -879,7 +880,8 @@ coincide con la distribución invariante obtenida en el apartado d).
 
 \subsection*{Apartado a)}
 
-Podemos transformar el grafo dado en el enunciado en una Cadena de Markov,
+Podemos transformar el grafo dado en el enunciado en una Cadena de Markov
+con conjunto de estados $E = \{a, b, c, d, e, f, g\}$,
 si asumimos que cualquier página A que no tiene hipervínculos tiene igual 
 probabilidad de ir a todas las páginas (A incluida). Entonces, en el grafo
 de la figura, basta con agregar aristas desde $g$ a todas las páginas
@@ -901,6 +903,12 @@ La matriz de transición P de la cadena nos queda de la siguiente forma:
     \end{block}
   \end{blockarray}
 \end{equation*}
+
+Se puede comprobar fácilmente que:
+\begin{itemize}
+  \item $P(i,j) \geq 0 \; \forall i,j \in E$
+  \item $\displaystyle\sum_{j \in E} P(i,j) = 1$
+\end{itemize}
 
 % ============================================================================
 

@@ -8,17 +8,17 @@ simularCienTiradas <- function(P) {
   length(which(Sim == "Cara"))
 }
 
-simularCienPorN <- function(N, P) {
-  Acumulador = 0
-  Uno = 0
-  for (i in 1:N) {
-    Sim <- simularCienTiradas(P)
+simularCienPorN <- function(n, p) {
+  Acumulador <- 0
+  Uno <- 0
+  for (i in 1:n) {
+    Sim <- simularCienTiradas(p)
     Acumulador <- Acumulador + Sim
     if (Sim == 1) {
-      Uno = Uno + 1
+      Uno <- Uno + 1
     }
   }
-  c(Uno / N, Acumulador / N)
+  c(Uno / n, Acumulador / n)
 }
 
 tresCaras <- function(N, P) {
