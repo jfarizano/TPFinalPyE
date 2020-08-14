@@ -1008,8 +1008,8 @@ son disjuntos y entonces se tiene que:
 
 \begin{align*}
   P(N_2 = 18, N_7 = 70) &= P(N_2 = 18, N_7 - N_2 = 52) \\
-                        &= P(N_2 = 18) \cdot P(N_7 - N_2 = 52) \\
-                        &= P(N_2 = 18) \cdot P(N_5 = 52) \\
+  (\text{Por hip.} \; 1: \; N_2 \;\text{y}\; N_7 - N_2 \; \text{son variables independientes}) \rightarrow &= P(N_2 = 18) \cdot P(N_7 - N_2 = 52) \\
+  (\text{Incrementos estacionarios}) \rightarrow &= P(N_2 = 18) \cdot P(N_5 = 52) \\
                         &= \frac{e^{-2(10)} \cdot (2 \cdot 10)^{18}}{18!} \cdot \frac{e^{-5(10)} \cdot (5 \cdot 10)^{52}}{52!} \\
                         &= 0.0045
 \end{align*}
